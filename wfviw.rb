@@ -38,9 +38,17 @@ class DeployManager
   class << self
     def latest(q = {})
       env = q["env"].to_i
+      sb = q["sort"]
       rs = Deployment.latest
       rs = rs.where(:environment_id => env) if env > 0
-      rs.all
+      #As long as href from index contains correct sort param, this will sort data by any deployment attribute
+      if !sb.nil? && !q["by"].nil?
+        rs.all.sort! { |a,b| a.send(sb) <=> b.send(sb) }
+      elsif !sb.nil?
+        rs.all.sort! { |a,b| b.send(sb) <=> a.send(sb) }
+      else
+        rs.all
+      end
     end
 
     def list(q = {})
@@ -81,12 +89,13 @@ end
 
 post "/deploy/:id/delete" do
   DeployManager.delete(params[:id])
-  #redirect to("/")
+  redirect to("/")
   200
 end
 
 post "/deploy" do
   DeployManager.create(params)
+  redirect to("/")
   201
 end
 

@@ -47,10 +47,20 @@
         <table class="table table-hover deployments">
           <thead>
             <tr>
-              <th>Name</th>
+              <th>Name
+              <!-- copy/paste both lines below changing only 'name'
+              to establish sort on other columns -->
+                <a href = <%="?env=#{params["env"]}&sort=name&by=rev" %> > &#9650; </a>
+                <a href = <%="?env=#{params["env"]}&sort=name" %> > &#9660; </a>
+              </th>
               <th>Version</th>
               <th>Environment</th>
-              <th>Deployed</th>
+              <th>Hostname</th>
+              <th>Deployed by</th>
+              <th>Deployed
+                <a href = <%="?env=#{params["env"]}&sort=deployed_at" %> > &#9650; </a>
+                <a href = <%="?env=#{params["env"]}&sort=deployed_at&by=rev" %> > &#9660; </a>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -59,6 +69,8 @@
                 <td><%= h deploy.name %></td>
                 <td><%= h deploy.version %></td>
                 <td><%= h deploy.environment.name %></td>
+                <td><%= h deploy.hostname %></td>
+                <td><%= h deploy.deployed_by %></td>
                 <td>
                   <%= h deploy.deployed_at.strftime("%F %R") %>
                   <a class="delete pull-right small" href="/deploy/<%= deploy.id %>/delete" class="small pull-right">Delete</a>
@@ -68,6 +80,34 @@
           </tbody>
         </table>
       <% end %>
+      <br>
+      <h5>Add a deployment</h5>
+      <hr>
+      <form name="add_deployment" class ="form-inline" action="/deploy" method="post">
+        <div class="form-group">
+          <label class="sr-only" for="name">Deployment Name</label>
+          <input type="text" name="name" class="form-control" id="name" placeholder="Enter name *" required>
+        </div>
+        <div class="form-group">
+          <label class="sr-only" for="version">Deployment Version</label>
+          <input type="text" name="version" class="form-control" id="version" placeholder="Enter version *" required>
+        </div>
+        <div class="form-group">
+          <label class="sr-only" for="env">Deployment Environment</label>
+          <input type="text" name="environment" class="form-control" id="env" placeholder="Enter environment *" required>
+        </div>
+        <br>
+        <br>
+        <div class="form-group">
+          <label class="sr-only" for="hostname">Deployment Hostname</label>
+          <input type="text" name="hostname" class="form-control" id="hostname" placeholder="Enter hostname">
+        </div>
+        <div class="form-group">
+          <label class="sr-only" for="deployed_by">Deployed By</label>
+          <input type="text" name="deployed_by" class="form-control" id="deployed_by" placeholder="Enter user">
+        </div>
+        <input type="submit" value="Submit" class="">
+      </form>
     </div>
     <script src="js/zepto.min.js"></script>
     <script>
