@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>WFVIW!?</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+    <style type="text/css">
+      .page-header {
+        border-bottom: none;
+        text-align: center;
+      }
+
+      .container {
+        width: 750px;
+      }
+
+      table td a.delete {
+       visibility: hidden;
+      }
+
+      table tr:hover a.delete {
+        visibility: visible;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="page-header">
+        <h1><abbr title="What Fucking Version is Where!?">WFVIW!?</abbr></h1>
+        <% if @environments.any? %>
+          <form action="/">
+            <select name="env">
+              <option value="">All Environments</option>
+              <% @environments.each do |env| %>
+                <option value="<%= env.id %>" <%= "selected" if params["env"].to_i == env.id %>><%= env.name %></option>
+              <% end %>
+            </select>
+          </form>
+        <% end %>
+      </div>
+
+      <% if @deploys.none? %>
+        <p class="text-center">Nothing has been deployed &mdash;<strong>get to work</strong>!</p>
+      <% else %>
+        <table class="table table-hover deployments">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Version</th>
+              <th>Environment</th>
+              <th>Deployed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @deploys.each do |deploy| %>
+              <tr class="deployment">
+                <td><%= h deploy.name %></td>
+                <td><%= h deploy.version %></td>
+                <td><%= h deploy.environment.name %></td>
+                <td>
+                  <%= h deploy.deployed_at.strftime("%F %R") %>
+                  <a class="delete pull-right small" href="/deploy/<%= deploy.id %>/delete" class="small pull-right">Delete</a>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
+    </div>
+    <script src="js/zepto.min.js"></script>
+    <script>
+      $().ready(function() {
+        $('select[name=env]').on('change', function() {
+          $(this).parent('form').submit();
+        });
+
+        $('.deployment a.delete').on('click', function(e) {
+	   e.preventDefault();
+           var $a = $(this);
+           $.post($a.attr('href'), function() {
+	     // TODO: Errors
+             $a.closest('.deployment').remove();
+           });
+         })
+      })
+    </script>
+  </body>
+</html>
